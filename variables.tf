@@ -8,7 +8,7 @@ variable "region" {
 }
 
 #####################
-# CONFIFG VPC
+# CONFIG VPC
 #####################
 # Configuration VPC CIDR BLOCK
 variable "subnet_cidr_vpc" {
@@ -22,12 +22,6 @@ variable "dns_hostnames" {
   description = "Enable DNS hostnames in the VPC"
   type        = bool
   default     = true
-}
-
-variable "vpc_id" {
-  description = "The ID of the VPC"
-  type        = string
-  default     = ""
 }
 
 #####################
@@ -44,14 +38,14 @@ variable "map_public_ip_on_launch" {
 variable "public_subnet_cidr" {
   description = "CIDR block for public subnet"
   type        = list(string)
-  default = ["10.0.0.0/24","10.0.2.0/24"]
+  default     = ["10.0.0.0/24", "10.0.2.0/24"]
 }
 
 # Configuration CIDR Private Subnet
 variable "private_subnet_cidr" {
   description = "CIDR block for private subnet"
   type        = list(string)
-  default = ["10.0.1.0/24","10.0.3.0/24"]
+  default     = ["10.0.1.0/24", "10.0.3.0/24"]
 }
 
 # Availiability Zones
@@ -61,3 +55,31 @@ variable "availability_zones" {
   default     = ["us-east-1a", "us-east-1b"]
 }
 
+# Instance Type
+variable "instance_type" {
+  description = "Type of instance to deploy"
+  type        = string
+  default     = "t2.micro"
+}
+
+#####################
+# CONFIG Security Group
+#####################
+# Security Group for web server
+variable "all_destination_cidr" {
+  description = "CIDR block for allowing all traffic within the VPC"
+  type        = string
+  default     = "0.0.0.0/0"
+}
+
+variable "web_port" {
+  description = "Port for web server access"
+  type        = number
+  default     = 80
+}
+
+variable "ssh_port" {
+  description = "Port for SSH access"
+  type        = number
+  default     = 22
+}
