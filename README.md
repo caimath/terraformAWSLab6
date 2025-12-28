@@ -18,6 +18,7 @@
 ## Credentials
 
 - Modify aws credentials on windows: `notepad "$env:USERPROFILE\.aws\credentials"`
+- Générer clé SSH: `ssh-keygen -t rsa -b 4096 -f web-server-key`
 
 ## Project Structure
 
@@ -40,6 +41,8 @@
 
 ## Commands
 
+### Terraform
+
 - `terraform init` - Initializes a Terraform working directory and downloads required provider plugins
 - `terraform fmt` - Formats Terraform configuration files to standard style
 - `terraform fmt -check` - Checks if files are properly formatted without modifying them
@@ -47,3 +50,6 @@
 - `terraform plan` - Shows what changes Terraform will make to your infrastructure
 - `terraform apply` - Applies the planned changes and creates or updates resources
 - `terraform destroy` - remove all the resources defined in Terraform configuration
+
+### SSH
+- `ssh -i web-server-key ec2-user@`
