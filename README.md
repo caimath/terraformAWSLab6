@@ -12,8 +12,8 @@
 - [x] Web server (create, sg, user data)
 - [x] Route table to internet
 - [x] Route table private subnet to nat gateway
-- [ ] RDS Primary (create and sg)
-- [ ] RDS Secondary (create and sg)
+- [x] RDS Primary (create and sg)
+- [ ] RDS Secondary (Not possible with student account)
 
 ## Credentials
 
@@ -27,6 +27,7 @@
 ├── data.tf
 ├── main.tf
 ├── outputs.tf
+├── secrets.tfvars
 ├── terraform.tfstate
 ├── terraform.tfvars
 ├── variables.tf
@@ -38,6 +39,7 @@
 - terraform.tfvars: provides concrete values for variables (CIDRs, sizes, names)
 - outputs.tf: exposes outputs printed after running `terraform apply`(Subnets and VPC IDs and clickable link to web server)
 - terraform.tfstate: Terraform state (Do not modify)
+- secrets.tfvars: contains `db_password` and `db_username`
 
 ## Commands
 
@@ -52,4 +54,5 @@
 - `terraform destroy` - remove all the resources defined in Terraform configuration
 
 ### SSH
-- `ssh -i web-server-key ec2-user@`
+
+- `ssh -i web-server-key ec2-user@<Public_DNS>`
