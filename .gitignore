@@ -4,3 +4,5 @@
 *.tfstate
 *.tfplan
 *.tfstate.backup
+*.pem
+secrets.tfvars
