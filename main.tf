@@ -186,7 +186,7 @@ resource "aws_security_group" "web_server_1_sg" {
   }
 }
 
-# aws security group web_server_1 ingress rules
+# aws security group web_server_1 ingress rules HTTP
 resource "aws_vpc_security_group_ingress_rule" "web_server_1_sg_ingress_http" {
   cidr_ipv4         = var.all_destination_cidr
   from_port         = var.web_port
@@ -210,6 +210,18 @@ resource "aws_vpc_security_group_egress_rule" "web_server_1_sg_egress" {
   }
 }
 
+# aws security group web_server_1 ingress rules SSH
+resource "aws_vpc_security_group_ingress_rule" "web_server_1_sg_ingress_ssh" {
+  cidr_ipv4         = var.all_destination_cidr # change
+  from_port         = var.ssh_port
+  ip_protocol       = "tcp"
+  to_port           = var.ssh_port
+  security_group_id = aws_security_group.web_server_1_sg.id
+
+  tags = {
+    Name = "Allow inbound SSH traffic on web_server_1"
+  }
+}
 
 # Instance EC2 web_server_1
 resource "aws_instance" "web_server_1" {
@@ -219,28 +231,96 @@ resource "aws_instance" "web_server_1" {
   vpc_security_group_ids      = [aws_security_group.web_server_1_sg.id]
   user_data_replace_on_change = true
 
-  # User data for web server
+  tags = {
+    Name = "Web Server 1"
+  }
+
   user_data = <<EOF
-  #! /bin/bash
-  sudo amazon-linux-extras install -y nginx1
-  systemctl enable nginx
-  sudo systemctl start nginx
-  EOF
+    #!/bin/bash
+    # Installer Nginx
+    sudo amazon-linux-extras install -y nginx1
+    systemctl enable nginx
+    systemctl start nginx
+
+    # Install MariaDB client
+    sudo yum install -y mariadb
+
+    # Create a custom homepage
+    echo "<html><head><title>Welcome to Web Server 1</title></head><body><h1>Welcome to Web Server 1</h1></body></html>" > /usr/share/nginx/html/index.html
+
+    EOF
 }
+
+
 
 #####################
 # DB RDS
 #####################
 # RDS DB PRIMARY in private subnet 1
-resource "aws_db_instance" "default" {
-  allocated_storage    = 10
-  db_name              = "mydb"
-  engine               = "mysql"
-  engine_version       = "8.0"
-  instance_class       = "db.t3.micro"
-  username             = "foo"
-  password             = "foobarbaz"
-  parameter_group_name = "default.mysql8.0"
-  skip_final_snapshot  = true
+resource "aws_db_instance" "rds_db" {
+  allocated_storage      = 10
+  db_name                = "primarydb"
+  engine                 = "mysql"
+  engine_version         = "8.0"
+  instance_class         = "db.t3.micro"
+  username               = var.db_username
+  password               = var.db_password
+  parameter_group_name   = "default.mysql8.0"
+  db_subnet_group_name   = aws_db_subnet_group.rds_db_subnet_group.name
+  vpc_security_group_ids = [aws_security_group.rds_db_sg.id]
+  availability_zone      = aws_subnet.private_subnet1.availability_zone
+
+  tags = {
+    Name = "RDS DB"
+  }
 }
+
+# RDS DB Subnet Group
+resource "aws_db_subnet_group" "rds_db_subnet_group" {
+  name       = "main"
+  subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+
+  tags = {
+    Name = "DB rds"
+  }
+}
+
+# aws security group rds db primary
+resource "aws_security_group" "rds_db_sg" {
+  name        = "rds_db_sg"
+  description = "Allow MySQL traffic from web server"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  tags = {
+    Name = "Allow MySQL traffic from web server to RDS DB"
+  }
+}
+resource "aws_vpc_security_group_ingress_rule" "rds_db_sg_ingress_mysql" {
+
+  security_group_id            = aws_security_group.rds_db_sg.id
+  referenced_security_group_id = aws_security_group.web_server_1_sg.id
+  from_port                    = var.mysql_port
+  ip_protocol                  = "tcp"
+  to_port                      = var.mysql_port
+
+  tags = {
+    Name = "Allow mysql traffic from web server to RDS DB"
+  }
+}
+
+# Blocked with student access
+# RDS DB secondary - read replica in private subnet 2
+# resource "aws_db_instance" "rds_db_secondary" {
+#   replicate_source_db    = aws_db_instance.rds_db.identifier
+#   instance_class         = "db.t3.micro"
+#   engine                 = "mysql"
+#   vpc_security_group_ids = [aws_security_group.rds_db_sg.id]
+#   availability_zone      = aws_subnet.private_subnet2.availability_zone
+
+
+#   depends_on = [aws_db_instance.rds_db]
+#   tags = {
+#     Name = "RDS DB Secondary Read Replica"
+#   }
+# }
 

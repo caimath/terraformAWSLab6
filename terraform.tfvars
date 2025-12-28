@@ -31,3 +31,6 @@ instance_type = "t2.micro"
 all_destination_cidr = "0.0.0.0/0"
 web_port             = 80
 ssh_port             = 22
+
+# RDS DB Security Group
+mysql_port = 3306

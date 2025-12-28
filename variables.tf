@@ -83,3 +83,25 @@ variable "ssh_port" {
   type        = number
   default     = 22
 }
+
+#####################
+# CONFIG RDS
+#####################
+# RDS DB password
+variable "db_password" {
+  description = "RDS root user password"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_username" {
+  description = "RDS root username"
+  type        = string
+  sensitive   = true
+}
+
+variable "mysql_port" {
+  description = "mysql port"
+  type        = number
+  default     = 3306
+}
