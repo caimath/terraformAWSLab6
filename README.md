@@ -17,7 +17,7 @@
 
 ## Credentials
 
-- Modify aws credentials: `notepad "$env:USERPROFILE\.aws\credentials"`
+- Modify aws credentials on windows: `notepad "$env:USERPROFILE\.aws\credentials"`
 
 ## Project Structure
 
