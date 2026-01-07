@@ -18,7 +18,7 @@
 ## Credentials
 
 - Modify aws credentials on windows: `notepad "$env:USERPROFILE\.aws\credentials"`
-- Générer clé SSH: `ssh-keygen -t rsa -b 4096 -f web-server-key`
+- Generate SSH Key: `ssh-keygen -t rsa -b 4096 -f web-server-key`
 
 ## Project Structure
 
@@ -56,3 +56,16 @@
 ### SSH
 
 - `ssh -i web-server-key ec2-user@<Public_DNS>`
+
+## Use this project
+
+- Create `secrets.tfvars` and define `db_password` and `db_username` in this file
+- Start the AWS lab and put your credentials in `~/.aws/credentials` on Linux and macOS, and run this command on Windows: `notepad "$env:USERPROFILE\.aws\credentials"`
+- Generate an SSH key: `ssh-keygen -t rsa -b 4096 -f web-server-key` (for EC2 SSH connection)
+- Run `terraform init`
+- Run `terraform fmt`
+- Run `terraform plan`
+- Run `terraform apply`
+- Run `terraform destroy` when you have finished to avoid costs
+
+
